@@ -1,0 +1,31 @@
+#!/bin/bash
+# add to /usr/local/bin/
+LOG="/var/log/powersave.log"
+MMIO="/sys/class/powercap/intel-rapl-mmio:0"
+
+# Турбо off
+for cpu in $(seq 0 63); do
+    xenpm disable-turbo-mode $cpu 2>/dev/null || true
+done
+
+# CPPC balance
+for cpu in $(seq 0 63); do
+    xenpm set-cpufreq-cppc $cpu balance 2>/dev/null || true
+done
+
+# PL1 = 15W
+if [ -w "$MMIO/constraint_0_power_limit_uw" ]; then
+    echo 15000000 > "$MMIO/constraint_0_power_limit_uw" 2>/dev/null || true
+fi
+
+# P-ядра 0-15: 2.4 GHz
+for cpu in $(seq 0 15); do
+    xenpm set-scaling-maxfreq $cpu 2400000 2>/dev/null || true
+done
+
+# E-ядра 16-23: 2.0 GHz
+for cpu in $(seq 16 23); do
+    xenpm set-scaling-maxfreq $cpu 2000000 2>/dev/null || true
+done
+
+echo "$(date): Applied powersave (P:2.4, E:2.0, no turbo, PL1=15W)" >> $LOG
