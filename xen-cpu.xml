@@ -1,0 +1,19 @@
+{% extends 'libvirt/xen.xml' %}
+{% block basic %}
+        {% if vm.features.get('vcpu_pin_pcores', '0') == '1' -%}
+        <vcpu>{{ vm.vcpus }}</vcpu>
+            <cputune>
+                {% for i in range(vm.vcpus) %}
+                    <vcpupin vcpu='{{ i }}' cpuset='0-15'/>
+                {% endfor %}
+            </cputune>
+        {% else -%}
+        <vcpu>{{ vm.vcpus }}</vcpu>
+            <cputune>
+                {% for i in range(vm.vcpus) %}
+                    <vcpupin vcpu='{{ i }}' cpuset='16-23'/>
+                {% endfor %}
+            </cputune>
+        {% endif -%}
+        {{ super() }}
+{% endblock %}
