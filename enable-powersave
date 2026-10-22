@@ -3,7 +3,7 @@
 LOG="/var/log/powersave.log"
 MMIO="/sys/class/powercap/intel-rapl-mmio:0"
 
-# Турбо off
+# Turbo off
 for cpu in $(seq 0 63); do
     xenpm disable-turbo-mode $cpu 2>/dev/null || true
 done
@@ -13,17 +13,17 @@ for cpu in $(seq 0 63); do
     xenpm set-cpufreq-cppc $cpu balance 2>/dev/null || true
 done
 
-# PL1 = 15W
+# PL1 = 15W limit
 if [ -w "$MMIO/constraint_0_power_limit_uw" ]; then
     echo 15000000 > "$MMIO/constraint_0_power_limit_uw" 2>/dev/null || true
 fi
 
-# P-ядра 0-15: 2.4 GHz
+# P-ядра 0-15: 2.4 GHz limit
 for cpu in $(seq 0 15); do
     xenpm set-scaling-maxfreq $cpu 2400000 2>/dev/null || true
 done
 
-# E-ядра 16-23: 2.0 GHz
+# E-ядра 16-23: 2.0 GHz limit
 for cpu in $(seq 16 23); do
     xenpm set-scaling-maxfreq $cpu 2000000 2>/dev/null || true
 done
