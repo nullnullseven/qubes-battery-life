@@ -1,0 +1,11 @@
+[Unit]
+Description=Intel i9 Powersave
+After=qubes-core.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/enable-powersave
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
