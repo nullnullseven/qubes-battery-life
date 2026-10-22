@@ -1,0 +1,9 @@
+[Unit]
+Description=XENweight dom0
+[Service]
+Type=oneshot
+Environment="TERM=dumb"
+RemainAfterExit=true
+ExecStart=/usr/bin/xl sched-credit2 -d 0 -w 512
+[Install]
+WantedBy=multi-user.target
